@@ -22,18 +22,30 @@ import java.util.Locale;
 public class GlobalExceptionHandler {
     private final MessageSource pokerGameMessageSource;
 
+    @ExceptionHandler(value = Exception.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleExceptions(Exception e) {
+        log.error("internal error:", e);
+        return getErrorResponse(CommonErrorDefine.INTERNAL_ERROR.getCode());
+    }
+
+
     @ExceptionHandler(value = {BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationExceptions(BindException e) {
+    public ErrorResponse handleBindExceptions(BindException e) {
         log.warn("params error:", e);
-        return new ErrorResponse(CommonErrorDefine.PARAMS_ERROR.getCode(),
-                getLocalMsg(CommonErrorDefine.PARAMS_ERROR.getCode()));
+        return getErrorResponse(CommonErrorDefine.PARAMS_ERROR.getCode());
     }
 
     @ExceptionHandler(value = BizException.class)
-    public ErrorResponse handleValidationExceptions(BizException e) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBizExceptions(BizException e) {
         log.warn("biz error: code:{}, message", e.getCode());
         return new ErrorResponse(e.getCode(), getLocalMsg(e));
+    }
+
+    private ErrorResponse getErrorResponse(String errorCode) {
+        return new ErrorResponse(errorCode, getLocalMsg(errorCode));
     }
 
     private String getLocalMsg(BaseException e) {

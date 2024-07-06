@@ -6,7 +6,12 @@ public enum CommonErrorDefine implements ErrorDefine {
     /**
      * 通用参数错误码
      */
-    PARAMS_ERROR("0400");
+    PARAMS_ERROR("0400"),
+
+    /**
+     * 系统异常错误码
+     */
+    INTERNAL_ERROR("0500");
 
     private static final String CODE_PREFIX = "PokerGame.00.";
 
